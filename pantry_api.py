@@ -16,6 +16,9 @@ class Pantry:
       "Content-Type": "application/json"
     }
   
+  def get_default(self):
+    return self._start
+  
   def set_default(self, _default_basket):
     self._start = _default_basket
     
@@ -46,7 +49,7 @@ class Pantry:
 
     return response.text
   
-  def push(self, *, basket: str = None, content: Union[dict, str, list, int], keys: list = []):
+  def push(self, *, basket: str = None, content: Union[dict, str, list, int]):
     '''
     appends item to basket
     '''
@@ -125,4 +128,4 @@ class Pantry:
     olddata = self.pull(old)
     return self.push(new, olddata)
   
-  default = property(fset = set_default, fdel = remove_default)
+  default = property(fget = get_default, fset = set_default, fdel = remove_default)
