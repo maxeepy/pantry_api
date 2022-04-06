@@ -1,5 +1,4 @@
 import requests as rq
-import json
 from typing import Union
 
 class Pantry:
@@ -34,7 +33,7 @@ class Pantry:
     
     return response.json()
   
-  def new_basket(self, name: str, content: Union[dict, str, list, int] = None):
+  def new_basket(self, name: str, content: Union[dict, str, list, int, float] = None):
     '''
     creates new basket
     '''
@@ -43,13 +42,13 @@ class Pantry:
     payload = self.payload
     
     if content != None:
-      payload = json.dumps(content)
+      payload = __import__("json").dumps(content)
 
     response = rq.post(url, headers = self.headers, data = payload)
 
     return response.text
   
-  def push(self, *, basket: str = None, content: Union[dict, str, list, int]):
+  def push(self, *, basket: str = None, content: Union[dict, str, list, int, float]):
     '''
     appends item to basket
     '''
@@ -58,7 +57,7 @@ class Pantry:
     
     url = f"https://getpantry.cloud/apiv1/pantry/{self.id}/basket/{basket.replace(' ', '%20')}"
     
-    payload = json.dumps(content)
+    payload = __import__("json").dumps(content)
     
     response = rq.put(url, headers = self.headers, data = payload)
     
@@ -82,7 +81,7 @@ class Pantry:
     except:
       return f"{basket} does not exist!"
     
-  def edit(self, *, basket: str = None, keys: list = [], content: Union[dict, str, list, int]):
+  def edit(self, *, basket: str = None, keys: list = [], content: Union[dict, str, list, int, float]):
     '''
     edits content in basket
     '''
