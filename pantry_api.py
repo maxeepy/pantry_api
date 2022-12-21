@@ -1,4 +1,5 @@
 import requests as rq
+import json
 from typing import Union
 
 class Pantry:
@@ -8,10 +9,10 @@ class Pantry:
   Used for working with pantry api
   '''
   def __init__(self, id: str, _default_basket: str = None): 
-    self.id = id
+    self._id = id
     self._start = _default_basket
-    self.payload = ''
-    self.headers = {
+    self._payload = ''
+    self._headers = {
       "Content-Type": "application/json"
     }
   
@@ -24,12 +25,19 @@ class Pantry:
   def remove_default(self):
     del self._start
   
+  def __enter__(self):
+    self._var = {}
+    return self._var
+  2
+  def __exit__(self, exc_type, exc_value, exc_traceback):
+    self.push(content = {"main": self._var})
+  
   def pantry(self):
     '''
     shows pantry info
     '''
-    url = f"https://getpantry.cloud/apiv1/pantry/{self.id}"
-    response = rq.get(url, headers = self.headers, data = self.payload)
+    url = f"https://getpantry.cloud/apiv1/pantry/{self._id}"
+    response = rq.get(url, headers = self._headers, data = self._payload)
     
     return response.json()
   
@@ -37,14 +45,14 @@ class Pantry:
     '''
     creates new basket
     '''
-    url = f"https://getpantry.cloud/apiv1/pantry/{self.id}/basket/{name.replace(' ', '%20')}"
+    url = f"https://getpantry.cloud/apiv1/pantry/{self._id}/basket/{name.replace(' ', '%20')}"
     
-    payload = self.payload
+    payload = self._payload
     
     if content != None:
-      payload = __import__("json").dumps(content)
+      payload = json.dumps(content)
 
-    response = rq.post(url, headers = self.headers, data = payload)
+    response = rq.post(url, headers = self._headers, data = payload)
 
     return response.text
   
@@ -55,11 +63,11 @@ class Pantry:
     if self._start != None and basket == None:
       basket = self._start
     
-    url = f"https://getpantry.cloud/apiv1/pantry/{self.id}/basket/{basket.replace(' ', '%20')}"
+    url = f"https://getpantry.cloud/apiv1/pantry/{self._id}/basket/{basket.replace(' ', '%20')}"
+
+    payload = json.dumps(content)
     
-    payload = __import__("json").dumps(content)
-    
-    response = rq.put(url, headers = self.headers, data = payload)
+    response = rq.put(url, headers = self._headers, data = payload)
     
     try:
       return f"Appended {content} to {basket}: {response.json()}"
@@ -73,8 +81,8 @@ class Pantry:
     if self._start != None and basket == None:
       basket = self._start
     
-    url = f"https://getpantry.cloud/apiv1/pantry/{self.id}/basket/{basket.replace(' ', '%20')}"
-    response = rq.get(url, headers = self.headers, data = self.payload)
+    url = f"https://getpantry.cloud/apiv1/pantry/{self._id}/basket/{basket.replace(' ', '%20')}"
+    response = rq.get(url, headers = self._headers, data = self._payload)
     
     try:
       return response.json()
@@ -112,8 +120,8 @@ class Pantry:
     '''
     deletes selected basket
     '''
-    url = f"https://getpantry.cloud/apiv1/pantry/{self.id}/basket/{basket.replace(' ', '%20')}"
-    response = rq.delete(url, headers = self.headers, data = self.payload)
+    url = f"https://getpantry.cloud/apiv1/pantry/{self._id}/basket/{basket.replace(' ', '%20')}"
+    response = rq.delete(url, headers = self._headers, data = self._payload)
     
     try:
       return response.text
